@@ -1,7 +1,41 @@
+:root {
+
+  --grey-200: #F8F8F8;
+  --grey-400: #BBBBBB;
+
+  --pink-700: #FF57B2;
+
+  --background-color: #1A1D23;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-// TODO
+html {
+  /*
+      ? Para melhorar a acessibilidade, muda o tamanho das fontes dependendo do dispositivo
+      * font-size normal: 16px
+   */ 
+  @media (max-width: 1080px) { //* Tablet -> 15px
+      font-size: 93.75%; 
+  }
+  @media (max-width: 720px) { //* Mobile -> 14px
+      font-size: 87.5%; 
+  }
+}
+
+body { 
+  color: var(--grey-400);
+  background-color: var(--background-color)
+}
+
+body, input, select, textarea, button {
+  font: 400 1rem 'Inter', sans-serif;
+}
+
+a {
+  text-decoration: none;
+}

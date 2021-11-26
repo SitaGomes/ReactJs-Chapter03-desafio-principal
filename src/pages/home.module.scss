@@ -1,1 +1,51 @@
-// TODO
+.Container {
+    max-width: 740px;
+    margin: 0 auto;
+
+    > img {
+        margin: 5rem 0 4rem;
+    }
+}
+
+.Content {
+
+    cursor: pointer;
+    transition: color 0.3s;
+
+    > h1 {
+        color: var(--grey-200);
+        font-weight: bold;
+        font-size: 1.5rem;
+    }
+
+    > p {
+        line-height: 1.8rem;
+        font-weight: regular;
+
+        margin-top: 0.5rem;
+    }
+
+    > section {
+        margin-top: 1.5rem;
+
+        display: flex;
+        gap: 1.5rem;
+
+        time, address {
+            display: flex;
+            align-items: center;
+
+            gap: 0.5rem;
+        }
+
+        
+    }
+
+    & + div {
+        margin-top: 3rem;
+    }
+
+    &:hover{
+        color: var(--grey-200);
+    }
+}
