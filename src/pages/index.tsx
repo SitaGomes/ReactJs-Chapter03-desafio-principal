@@ -12,6 +12,7 @@ import {AiOutlineCalendar, AiOutlineUser} from "react-icons/ai"
 
 import commonStyles from '../styles/common.module.scss';
 import styles from './home.module.scss';
+import { useState } from 'react';
 
 interface PostResponse {
   uid?: string;
@@ -33,9 +34,11 @@ interface PostResponse {
 interface Post {
   uid?: string;
   first_publication_date: string | null;
-  title: string;
-  subtitle: string;
-  author: string;
+  data: {
+    title: string;
+    subtitle: string;
+    author: string;
+  }
 };
 
 interface PostPagination {
@@ -49,7 +52,32 @@ interface HomeProps {
 
 export default function Home({postsPagination}: HomeProps) {
 
-  console.log(postsPagination)
+  const [posts, setPosts] = useState<Post[]>(postsPagination.results)
+
+  async function nextPage () {
+    try {
+      const response = await fetch(postsPagination.next_page)
+
+      const {results} = await response.json()
+
+      const newPost = results.map((post: PostResponse) => {
+        return {
+          uid: post.uid,
+          first_publication_date: post.first_publication_date,
+          data: {
+            title: post.data.title,
+            subtitle: post.data.subtitle,
+            author: post.data.author,
+          }
+        }
+      }) 
+
+      setPosts([...posts, ...newPost])
+    } catch {
+      return
+    }
+
+  }
 
   return(
     <>
@@ -62,24 +90,33 @@ export default function Home({postsPagination}: HomeProps) {
         
         <img src="/logo.svg" alt="Space Traveling logo" />
 
-        {postsPagination.results.map(post => (
-          <Link href={`/posts/${post.uid}`} key={post.uid}>
+        {posts.map((post, index) => (
+          <Link href={`/post/${post.uid}`} key={index}>
             <div className={styles.Content}>
-              <h1>{post.title}</h1>
-              <p>{post.subtitle}</p>
+              <h1>{post.data.title}</h1>
+              <p>{post.data.subtitle}</p>
               <section>
                 <time>
                   <AiOutlineCalendar />
-                  {post.first_publication_date}
+                  {format(new Date(post.first_publication_date), "dd MMM yyyy").toLowerCase()}
                 </time>
                 <address>
                   <AiOutlineUser />  
-                  {post.author}
+                  {post.data.author}
                 </address>
               </section>
             </div>
           </Link>
         ))}
+
+        {postsPagination.next_page && (
+          <button 
+            className={styles.Button} 
+            onClick={nextPage}
+            >
+              Carregar mais posts
+          </button>
+        )}
       </main>
     </>
   )
@@ -90,16 +127,18 @@ export const getStaticProps: GetStaticProps = async () => {
 
   const postsResponse = await prismic.query(
       Prismic.Predicates.at("document.type", "post"),
-      {pageSize: 3}
+      {pageSize: 1}
   );
 
-  const posts: Post[] = postsResponse.results.map((post: PostResponse) => {
+  const posts = postsResponse.results.map((post: PostResponse) => {
     return {
       uid: post.uid,
-      title: post.data.title,
-      subtitle: post.data.subtitle,
-      author: post.data.author,
-      first_publication_date: format(new Date(post.first_publication_date), "dd MMM yyyy", {locale: ptBR}).toUpperCase(),
+      first_publication_date: post.first_publication_date,
+      data: {
+        title: post.data.title,
+        subtitle: post.data.subtitle,
+        author: post.data.author,
+      }
     }
   }) 
 
