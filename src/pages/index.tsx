@@ -1,6 +1,6 @@
 import { GetStaticProps } from 'next';
 import Link from "next/link"
-import Header from "next/head"
+import HeaderTag from "next/head"
 
 import { getPrismicClient } from '../services/prismic';
 import Prismic from "@prismicio/client"
@@ -10,7 +10,9 @@ import ptBR from 'date-fns/locale/pt-BR';
 
 import {AiOutlineCalendar, AiOutlineUser} from "react-icons/ai"
 
-import commonStyles from '../styles/common.module.scss';
+import Header from "../components/Header"
+
+import common from '../styles/common.module.scss';
 import styles from './home.module.scss';
 import { useState } from 'react';
 
@@ -82,14 +84,14 @@ export default function Home({postsPagination}: HomeProps) {
   return(
     <>
 
-      <Header>
+      <HeaderTag>
         <title>SpaceTraveling</title>
-      </Header>
+      </HeaderTag>
 
-      <main className={styles.Container}>
+      <Header />
+
+      <main className={common.Styles}>
         
-        <img src="/logo.svg" alt="Space Traveling logo" />
-
         {posts.map((post, index) => (
           <Link href={`/post/${post.uid}`} key={index}>
             <div className={styles.Content}>
