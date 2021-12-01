@@ -1,10 +1,19 @@
 import { GetStaticPaths, GetStaticProps } from 'next';
+import {useRouter} from "next/router";
+import HeaderTag from "next/head"
 
 import Prismic from "@prismicio/client"
+import {RichText} from "prismic-dom"
 
 import { getPrismicClient } from '../../services/prismic';
 
-import commonStyles from '../../styles/common.module.scss';
+import Header from "../../components/Header"
+
+import { format } from 'date-fns';
+
+import {AiOutlineCalendar, AiOutlineUser, AiOutlineClockCircle} from "react-icons/ai"
+
+import common from '../../styles/common.module.scss';
 import styles from './post.module.scss';
 
 interface Post {
@@ -29,8 +38,52 @@ interface PostProps {
 }
 
 export default function Post({post}: PostProps) {
+
+  const router = useRouter()
+
+  console.log(post)
+
+  if (router.isFallback) {
+    return <h1>Carregando...</h1>
+  }
+
   return(
-    <h1>Post</h1>
+    <>
+      <HeaderTag>
+        <title>{post.data.title} | SpaceTraveling</title>
+      </HeaderTag>
+
+      <Header />
+
+      <img className={styles.Banner} src={post.data.banner.url} alt={post.data.title} />
+      
+      <main className={`${common.Styles} ${styles.Container}`}>
+
+        <h1>{post.data.title}</h1>
+
+        <div className={styles.PostInfo}>
+          <time>
+            <AiOutlineCalendar />
+            {format(new Date(post.first_publication_date), "dd MMM yyyy")}
+          </time>
+          <address>
+            <AiOutlineUser />  
+            {post.data.author}
+          </address>
+          <p>
+            <AiOutlineClockCircle />
+            4 Min
+          </p>
+        </div>
+
+        {post.data.content.map(content => (
+          <div key={content.heading} className={styles.Content}>
+            <h2>{content.heading}</h2>
+            <div dangerouslySetInnerHTML={{__html: RichText.asHtml(content.body)}}/>
+          </div>
+        ))}
+      </main>
+    </>
   )
 }
 
@@ -62,13 +115,15 @@ export const getStaticProps: GetStaticProps = async context => {
   const prismic = getPrismicClient();
   const response: Post = await prismic.getByUID("post", String(slug), {});
 
-  const post: Post = {
+  const post = {
     first_publication_date: response.first_publication_date,
     data: {
-      author: response.data.author,
-      banner: response.data.banner,
-      content: response.data.content,
       title: response.data.title,
+      author: response.data.author,
+      banner: {
+        url: response.data.banner.url
+      },
+      content: response.data.content,
     }
   }
 
