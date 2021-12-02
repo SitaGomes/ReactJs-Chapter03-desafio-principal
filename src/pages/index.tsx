@@ -6,7 +6,6 @@ import { getPrismicClient } from '../services/prismic';
 import Prismic from "@prismicio/client"
 
 import { format } from 'date-fns';
-import ptBR from 'date-fns/locale/pt-BR';
 
 import {AiOutlineCalendar, AiOutlineUser} from "react-icons/ai"
 
