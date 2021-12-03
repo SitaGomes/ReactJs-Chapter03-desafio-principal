@@ -8,8 +8,7 @@ import {RichText} from "prismic-dom"
 import { getPrismicClient } from '../../services/prismic';
 
 import Header from "../../components/Header"
-
-import { format } from 'date-fns';
+import Comments from "../../components/Comments"
 
 import {AiOutlineCalendar, AiOutlineUser, AiOutlineClockCircle} from "react-icons/ai"
 
@@ -40,8 +39,6 @@ interface PostProps {
 export default function Post({post}: PostProps) {
 
   const router = useRouter()
-
-  console.log(post)
 
   if (router.isFallback) {
     return <h1>Carregando...</h1>
@@ -84,6 +81,12 @@ export default function Post({post}: PostProps) {
           </div>
         ))}
       </main>
+
+      <footer className={`${common.Styles} ${styles.Footer}`}>
+          <h1>Comentários</h1>
+
+        <Comments />
+      </footer>
     </>
   )
 }

@@ -6,6 +6,7 @@ export default class MyDocument extends Document {
     return { ...initialProps }
   }
 
+
   render() {
     return (
       <Html>
