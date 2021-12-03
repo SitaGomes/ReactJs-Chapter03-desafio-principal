@@ -64,7 +64,8 @@ export default function Post({post}: PostProps) {
         <div className={styles.PostInfo}>
           <time>
             <AiOutlineCalendar />
-            {format(new Date(post.first_publication_date), "dd MMM yyyy")}
+            25 mar 2021
+            {/* {format(new Date(post.first_publication_date), "dd MMM yyyy")} */}
           </time>
           <address>
             <AiOutlineUser />  
@@ -72,7 +73,7 @@ export default function Post({post}: PostProps) {
           </address>
           <p>
             <AiOutlineClockCircle />
-            4 Min
+            4 min
           </p>
         </div>
 
