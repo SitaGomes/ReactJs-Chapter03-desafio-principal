@@ -1,6 +1,7 @@
 import { GetStaticPaths, GetStaticProps } from 'next';
 import {useRouter} from "next/router";
 import HeaderTag from "next/head"
+import Link from "next/link"
 
 import Prismic from "@prismicio/client"
 import {RichText} from "prismic-dom"
@@ -14,9 +15,31 @@ import {AiOutlineCalendar, AiOutlineUser, AiOutlineClockCircle} from "react-icon
 
 import common from '../../styles/common.module.scss';
 import styles from './post.module.scss';
+import { format, intlFormat } from 'date-fns';
 
+interface ResponsePost {
+  first_publication_date: string | null;
+  last_publication_date: string | null;
+  slugs: string[];
+  data: {
+    title: string;
+    banner: {
+      url: string;
+    };
+    author: string;
+    content: {
+      heading: string;
+      body: {
+        text: string;
+      }[];
+    }[];
+  };
+}
 interface Post {
   first_publication_date: string | null;
+  last_publication_date: string | null;
+  next_post: string | null;
+  previous_post: string | null;
   data: {
     title: string;
     banner: {
@@ -37,12 +60,14 @@ interface PostProps {
 }
 
 export default function Post({post}: PostProps) {
-
+  
   const router = useRouter()
 
   if (router.isFallback) {
     return <h1>Carregando...</h1>
   }
+
+  console.log(post)
 
   return(
     <>
@@ -61,8 +86,7 @@ export default function Post({post}: PostProps) {
         <div className={styles.PostInfo}>
           <time>
             <AiOutlineCalendar />
-            25 mar 2021
-            {/* {format(new Date(post.first_publication_date), "dd MMM yyyy")} */}
+            {format(new Date(post.first_publication_date), "dd MMM yyyy")}
           </time>
           <address>
             <AiOutlineUser />  
@@ -72,6 +96,16 @@ export default function Post({post}: PostProps) {
             <AiOutlineClockCircle />
             4 min
           </p>
+        
+        </div>
+
+        <div className={styles.DateUpdate}>
+          {post.last_publication_date && 
+            <>
+              * editado em {format(new Date(post.last_publication_date), "dd MMM yyyy")}, às {intlFormat(new Date(post.last_publication_date), {hour: "2-digit", minute: "2-digit", hour12: false})}
+            </>
+          }
+          
         </div>
 
         {post.data.content.map(content => (
@@ -83,8 +117,33 @@ export default function Post({post}: PostProps) {
       </main>
 
       <footer className={`${common.Styles} ${styles.Footer}`}>
-          <h1>Comentários</h1>
+        <div className={styles.Hr} />
+        
+        <div className={styles.PostLink} >
 
+          {
+            post?.previous_post &&
+              <Link href={`/post/${post.previous_post}`}>
+                <button>
+                  {post.previous_post}
+                  <span>Post anterior</span> 
+                </button>
+              </Link>
+          }
+          
+          {
+            post?.next_post && 
+              <Link href={`/post/${post.next_post}`}>
+                <button>
+                  {post.next_post}
+                  <span style={{justifyContent: 'end'}}>Próximo post</span>
+                </button>
+              </Link>
+          }
+          
+
+        </div>
+        
         <Comments />
       </footer>
     </>
@@ -117,10 +176,13 @@ export const getStaticProps: GetStaticProps = async context => {
   const {slug} = context.params;
 
   const prismic = getPrismicClient();
-  const response: Post = await prismic.getByUID("post", String(slug), {});
+  const response: ResponsePost = await prismic.getByUID("post", String(slug), {});
 
   const post = {
+    last_publication_date: response.last_publication_date,
     first_publication_date: response.first_publication_date,
+    previous_post: response?.slugs[1] || null,
+    next_post: response?.slugs[2] || null,
     data: {
       title: response.data.title,
       author: response.data.author,
@@ -130,6 +192,8 @@ export const getStaticProps: GetStaticProps = async context => {
       content: response.data.content,
     }
   }
+
+  console.log(post)
 
   return { 
     revalidate: 60 * 60 * 12,
