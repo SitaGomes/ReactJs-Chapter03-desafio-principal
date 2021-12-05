@@ -28,6 +28,10 @@
         }
     }
 
+    .DateUpdate {
+        margin-top: 1rem;
+    }
+
     .Content{
         a {
             color: var(--pink-700);
@@ -54,10 +58,33 @@
 
 
 .Footer {
-    margin-top: 3rem;
+    
+    .Hr {
+        margin: 2rem 0 3rem;
+        border: 1px solid var(--grey-800);
+    }
 
-    > h1 {
-        color: var(--grey-200);
+    .PostLink {
+        display: flex;
+        justify-content: space-between;
 
+        button {
+            border: none;
+            background: none;
+
+            color: var(--grey-200);
+
+            span {
+                display: flex;
+
+                color: var(--pink-700);
+                
+                font-weight: bold;
+
+                margin-top: 0.5rem;
+            }
+        }
+
+        margin-bottom: 2rem;
     }
 }

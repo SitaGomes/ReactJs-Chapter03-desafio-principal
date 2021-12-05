@@ -2,6 +2,7 @@
 
   --grey-200: #F8F8F8;
   --grey-400: #BBBBBB;
+  --grey-800: #494949;
 
   --pink-700: #FF57B2;
 
@@ -38,4 +39,8 @@ body, input, select, textarea, button {
 
 a {
   text-decoration: none;
+}
+
+button {
+  cursor: pointer;
 }
